@@ -1,0 +1,142 @@
+#%RAML 0.8
+title: Spectre Subsonic API
+version: v1
+baseUri: http://localhost/subsonic/rest
+
+documentation:
+  - title: Home
+    content: !include ../../README.md
+
+resourceTypes:
+  - response:
+      get:
+        queryParameters:
+          u:
+            displayName: Username
+            type: string
+            required: true
+            example: guest
+          p:
+            displayName: Password
+            description: |
+              Can be either clear-text or hex-encoded with 'enc:'. Token
+              and Salt should be preferred except for testing purposes.
+            type: string
+            required: false
+            example: enc:736573616d65
+          t:
+            displayName: Token
+            description: |
+              Authentication token, computed by the client as
+              md5(password+salt). The hash should be calculated treating
+              the strings as UTF-8 encoded.
+            type: string
+            required: false
+            example: 26719a1196d2a940705a59634eb18eab
+          s:
+            displayName: Salt
+            description: |
+              A random string used to calculate the authentication token. A
+              new salt should be used for every request.
+            type: string
+            required: false
+            example: c19b2d
+          c:
+            displayName: User Agent
+            type: string
+            required: true
+            example: DSub
+          f:
+            displayName: Format
+            description: |
+              Format to return response data in. Can be one of 'xml', 'json'
+              or 'jsonp'. If the format is jsonp, a callback parameter is required.
+            type: string
+            enum:
+              - xml
+              - json
+              - jsonp
+            default: xml
+            required: false
+          callback:
+            displayName: Callback
+            description: A callback function for jsonp responses.
+            type: string
+            required: false
+        responses:
+          200:
+            body:
+              text/xml:
+                schema: !include subsonic/schemas/<<methodName>>.xsd
+                example: !include subsonic/examples/<<methodName>>.xml
+      post:
+        body:
+          application/x-www-form-urlencoded:
+            formParameters:
+                        u:
+            displayName: Username
+            type: string
+            required: true
+            example: guest
+          p:
+            displayName: Password
+            description: |
+              Can be either clear-text or hex-encoded with 'enc:'. Token
+              and Salt should be preferred except for testing purposes.
+            type: string
+            required: false
+            example: enc:736573616d65
+          t:
+            displayName: Token
+            description: |
+              Authentication token, computed by the client as
+              md5(password+salt). The hash should be calculated treating
+              the strings as UTF-8 encoded.
+            type: string
+            required: false
+            example: 26719a1196d2a940705a59634eb18eab
+          s:
+            displayName: Salt
+            description: |
+              A random string used to calculate the authentication token. A
+              new salt should be used for every request.
+            type: string
+            required: false
+            example: c19b2d
+          c:
+            displayName: User Agent
+            type: string
+            required: true
+            example: DSub
+          f:
+            displayName: Format
+            description: |
+              Format to return response data in. Can be one of 'xml', 'json'
+              or 'jsonp'. If the format is jsonp, a callback parameter is required.
+            type: string
+            enum:
+              - xml
+              - json
+              - jsonp
+            default: xml
+            required: false
+          callback:
+            displayName: Callback
+            description: A callback function for jsonp responses.
+            type: string
+            required: false
+        responses:
+          200:
+            body:
+              text/xml:
+                schema: !include subsonic/schemas/<<methodName>>.xsd
+                example: !include subsonic/examples/<<methodName>>.xml
+
+/ping.view:
+  type: { response: { methodName: ping } }
+  description: Used to test connectivity with the server.
+/getLicense.view:
+  type: { response: { methodName: getLicense } }
+  description: |
+    Get details about the software license. For the purposes of Spectre the
+    license will always be considered valid.

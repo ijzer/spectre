@@ -1,0 +1,34 @@
+#%RAML 0.8
+title: Spectre API
+version: v1
+baseUri: https://localhost/{version}
+protocols: [HTTPS]
+mediaType: application/json
+
+documentation:
+  - title: Home
+    content: !include ../../README.md
+
+schemas:
+  - status: !include spectre/schemas/status.json
+
+resourceTypes:
+
+/status:
+  description: Server status information
+  get:
+    headers:
+      User-Agent:
+        description: Describes the client.
+        type: string
+    responses:
+      200:
+        body:
+          application/json:
+            schema: status
+            example: !include spectre/examples/status-ok.json
+      500:
+        body:
+          application/json:
+            schema: status
+            example: !include spectre/examples/status-error.json
