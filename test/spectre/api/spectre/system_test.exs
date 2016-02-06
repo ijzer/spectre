@@ -1,25 +1,38 @@
-Code.require_file("test/test_helper.exs")
-
 defmodule Spectre.API.Spectre.SystemTest do
-	use Amrita.Sweet
+	use ExUnit.Case
 	use Plug.Test
 
-	@opts Spectre.API.Spectre.init([])
+	@opts Spectre.API.init([])
 
-		facts "server tests" do
+	test "/status" do
+		conn = conn(:get, "/api/v1/status")
+		conn = Spectre.API.call(conn, @opts)
 
-		fact "/status" do
-			conn = conn(:get, "/api/v1/status")
-			conn = Spectre.API.Router.call(conn, @opts)
+		assert conn.state == :sent
+		assert conn.status == 200
 
-			conn.state |> equals(:sent)
-			conn.status |> equals(200)
+		response = Poison.Parser.parse!(conn.resp_body)
 
-			response = Poison.Parser.parse!(conn.resp_body)
+		assert is_binary(response["server"])
+		assert Regex.match?(~r/^\d+\.\d+\.\d+$/, response["version"])
+		assert response["status"] == "ok"
+	end 
 
-			response["server"] |> equals("spectre")
-			response["version"] |> equals("0.0.1")
-			response["status"] |> equals("ok")
-		end
+	test "resource not found" do
+		conn = conn(:get, "/api/v1/notreal")
+		conn = Spectre.API.call(conn, @opts)
+
+		assert conn.state == :sent
+		assert conn.status == 404
+
+		response = Poison.Parser.parse!(conn.resp_body)
+
+		assert response["status"] == "error"
+		assert is_map(response["error"])
+
+		error = response["error"]
+		assert error["code"] == 404
+		assert is_binary(error["message"])
+		assert is_binary(error["desc"])
 	end
 end

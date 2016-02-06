@@ -1,48 +1,51 @@
-Code.require_file("test/test_helper.exs")
-
 defmodule Spectre.API.Subsonic.SystemTest do
-	use Amrita.Sweet
+	use ExUnit.Case
 	use Plug.Test
+	import SweetXml
+	
+	@opts Spectre.API.init([])
 
-	@opts Spectre.API.Subsonic.init([])
+	test "/ping.view" do
+		conn = conn(:get, "/subsonic/rest/ping.view")
+		conn = Spectre.API.call(conn, @opts)
 
-		facts "subsonic server tests" do
-		import SweetXml
+		assert conn.state == :sent
+		assert conn.status == 200
 
-		fact "/ping.view" do
-			conn = conn(:get, "/subsonic/rest/ping.view")
-			conn = Spectre.API.Subsonic.call(conn, @opts)
+		response =
+			conn.resp_body
+    	|> xpath(
+	  		~x"//subsonic-response",
+				status: ~x"./@status"s,
+				version: ~x"./@version"s)
 
-			conn.state |> equals(:sent)
-			conn.status |> equals(200)
+		assert response[:status] == "ok"
+		assert Regex.match?(~r/^\d+\.\d+\.\d+$/, response[:version])
+	end
 
-			response =
-				conn.resp_body
-  			|> xpath(
-			    ~x"//subsonic-response",
-					status: ~x"./@status"s,
-					version: ~x"./@version"s)
+	test "/getLicense.view" do
+		conn = conn(:get, "/subsonic/rest/getLicense.view")
+		conn = Spectre.API.call(conn, @opts)
 
-			response[:status] |> equals("ok")
-			response[:version] |> equals("0.0.1")
-		end
+		assert conn.state == :sent
+		assert conn.status == 200
 
-		fact "/getLicense.view" do
-			conn = conn(:get, "/subsonic/rest/getLicense.view")
-			conn = Spectre.API.Subsonic.call(conn, @opts)
+		response =
+			conn.resp_body
+  		|> xpath(
+	  		~x"//subsonic-response/license",
+				valid: ~x"./@valid"s,
+				email: ~x"./@email"s)
 
-			conn.state |> equals(:sent)
-			conn.status |> equals(200)
+		assert response[:valid] == "true"
+		assert is_binary(response[:email])
+	end
 
-			response =
-				conn.resp_body
-			  |> xpath(
-				  ~x"//subsonic-response/license",
-					valid: ~x"./@valid"s,
-					email: ~x"./@email"s)
+	test "resource not found" do
+		conn = conn(:get, "/subsonic/rest/notReal.view")
+		conn = Spectre.API.call(conn, @opts)
 
-			response[:valid] |> equals("true")
-			response[:email] |> truthy
-		end
+		assert conn.state == :sent
+		assert conn.status == 404
 	end
 end

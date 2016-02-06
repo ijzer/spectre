@@ -28,7 +28,6 @@ defmodule Spectre.Mixfile do
 			{:excoveralls, "~> 0.4", only: :test},
       {:excheck, "~> 0.3", only: :test},
       {:triq, github: "krestenkrab/triq", only: :test},
-			{:amrita, "~>0.4", github: "josephwilk/amrita", only: :test}
 		]
   end
 end
