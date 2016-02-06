@@ -16,16 +16,19 @@ defmodule Spectre.Mixfile do
   end
 
   def application do
-    [applications: [:logger],
+    [applications: [:logger, :cowboy, :plug],
      mod: {Spectre, []}]
   end
 
   defp deps do
     [
-			{:credo, "~> 0.2", only: [:dev, :test]},
-			{:inch_ex, only: [:dev, :test]},
-			{:dialyxir, "~> 0.3", only: [:dev]},
-			{:excoveralls, "~> 0.4", only: :test},
+			{:cowboy, "~> 1.0.0"},
+			{:plug, "~> 1.0"},
+			{:poison, "~> 2.0"},
+			{:sweet_xml, "~> 0.5.0"},
+			{:credo, "~> 0.2", only: :dev},
+			{:inch_ex, "~> 0.5.1", only: :dev},
+			{:dialyxir, "~> 0.3", only: :dev},
       {:excheck, "~> 0.3", only: :test},
       {:triq, github: "krestenkrab/triq", only: :test},
 		]
