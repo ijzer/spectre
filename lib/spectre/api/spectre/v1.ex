@@ -1,4 +1,5 @@
 defmodule Spectre.API.Spectre.V1 do
+	alias Spectre.API.Spectre, as: API
 	use Plug.Router
 
 	plug Plug.Logger
@@ -6,10 +7,19 @@ defmodule Spectre.API.Spectre.V1 do
 	plug :dispatch
 
 	get "/status" do
-		send_resp(conn, 501, Atom.to_string(__MODULE__))
+		conn
+		|> resp(200, API.response(:ok))
+		|> send_resp
 	end
 
 	match _ do
-		send_resp(conn, 404, Atom.to_string(__MODULE__))
+		conn
+		|> resp(404,
+						API.response(:error,
+												 %{error: %{code: 404,
+																	 message: "Couldn't find what you wanted",
+																	 desc: "The resource you requested" <>
+																	 "does not exist"}}))
+		|> send_resp
 	end
 end

@@ -9,6 +9,7 @@ defmodule Spectre do
 		Plug.Adapters.Cowboy.http(Spectre.API, [], port: @port, compress: true)
 
     children = []
+			
     opts = [strategy: :one_for_one, name: Spectre.Supervisor]
     Supervisor.start_link(children, opts)
   end
