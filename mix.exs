@@ -13,7 +13,6 @@ defmodule Spectre.Mixfile do
 		 preferred_cli_env: ["coveralls": :test,
 												 "coveralls.detail": :test,
 												 "coveralls.post": :test],
-		 dialyzer: [plt_add_apps: [:cowboy, :plug, :poison]]
     ]
   end
 
@@ -31,13 +30,13 @@ defmodule Spectre.Mixfile do
 			{:sweet_xml, "~> 0.5.0", only: :test},
 			{:credo, "~> 0.2", only: :dev},
 			{:inch_ex, "~> 0.5.1", only: :dev},
-			{:dialyxir, "~> 0.3", only: :dev},
+			{:dialyze, "~> 0.2.0", only: :dev},
       {:excheck, "~> 0.3", only: :test},
       {:triq, github: "krestenkrab/triq", only: :test},
 		]
   end
 
 	defp aliases do
-		[check: ["inch", "credo", "dialyzer"]]
+		[check: ["inch", "credo", "dialyze"]]
 	end
 end
