@@ -8,10 +8,12 @@ defmodule Spectre.Mixfile do
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      deps: deps,
+		 aliases: aliases,
 		 test_coverage: [tool: ExCoveralls],
 		 preferred_cli_env: ["coveralls": :test,
 												 "coveralls.detail": :test,
-												 "coveralls.post": :test]
+												 "coveralls.post": :test],
+		 dialyzer: [plt_add_apps: [:cowboy, :plug, :poison]]
     ]
   end
 
@@ -34,4 +36,8 @@ defmodule Spectre.Mixfile do
       {:triq, github: "krestenkrab/triq", only: :test},
 		]
   end
+
+	defp aliases do
+		[check: ["inch", "credo", "dialyzer"]]
+	end
 end
