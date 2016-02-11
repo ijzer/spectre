@@ -17,7 +17,7 @@ defmodule Spectre.Mixfile do
   end
 
   def application do
-    [applications: [:logger, :cowboy, :plug],
+    [applications: [:logger, :cowboy, :plug, :porcelain],
      mod: {Spectre, []}]
   end
 
@@ -27,6 +27,8 @@ defmodule Spectre.Mixfile do
 			{:plug, "~> 1.0"},
 			{:poison, "~> 2.0"},
 			{:xml_builder, "~> 0.0.6"},
+			{:redix, ">= 0.0.0"},
+			{:porcelain, "~> 2.0"},
 			{:sweet_xml, "~> 0.5.0", only: :test},
 			{:credo, "~> 0.2", only: :dev},
 			{:inch_ex, "~> 0.5.1", only: :dev},
