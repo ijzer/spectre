@@ -1,4 +1,8 @@
 defmodule Spectre.API.Subsonic.System do
+  @moduledoc """
+  API methods categorized in the [Subsonic API spec](subsonic.org/pages/api.jsp)
+  as being system methods.
+  """
   use Plug.Router
   alias Spectre.API.Subsonic, as: API
 
@@ -8,7 +12,10 @@ defmodule Spectre.API.Subsonic.System do
 
   get "/ping.view", do: ping(conn)
   post "/ping.view", do: ping(conn)
-
+  
+  @doc """
+  Queries the status of the server.
+  """
   defp ping(conn) do
     conn
     |> resp(200, API.response(:ok))
@@ -20,6 +27,11 @@ defmodule Spectre.API.Subsonic.System do
   post "/getLicense.view", do: get_license(conn)
 
   @email Application.get_env(:spectre, :email, "")
+  @doc """
+  Checks the license status of the server. Because Spectre does not use a
+  licensing scheme, this response is hardcoded so that Subsonic clients
+  will think the server has a valid license.
+  """
   defp get_license(conn) do
     conn
     |> resp(200,

@@ -1,4 +1,8 @@
 defmodule Spectre.API.Spectre.V1 do
+  @moduledoc """
+  Implements the base methods of v1 of the Spectre API, namely server
+  status, login, and generic search.
+  """
   alias Spectre.API.Spectre, as: API
   use Plug.Router
 
@@ -6,6 +10,11 @@ defmodule Spectre.API.Spectre.V1 do
   plug :match
   plug :dispatch
 
+  @doc """
+  Gets the status of the Spectre server. Currently a simple up/down check,
+  but may report database status or the status of periodic functions
+  eventually.
+  """
   get "/status" do
     conn
     |> resp(200, API.response(:ok))

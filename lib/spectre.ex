@@ -1,4 +1,5 @@
 defmodule Spectre do
+  @moduledoc false
   use Application
 
   @port Application.get_env(:spectre, :port, 4000)

@@ -1,4 +1,11 @@
 defmodule Spectre.API.Subsonic do
+  @moduledoc """
+  Implements the Subsonic API. Currently uses a Plug pipeline to isolate
+  API methods in separate modules because the Subsonic API is ridiculous
+  and everything is a top-level resource. Authentication and other
+  mandatory for all method parameters are also checked by a Plug loaded
+  here.
+  """
   use Plug.Router
 
   plug Plug.Logger

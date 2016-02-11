@@ -6,3 +6,4 @@ erl_crash.dump
 *.beam
 
 dump.rdb
+all.json

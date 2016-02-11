@@ -1,4 +1,9 @@
 defmodule Spectre.API.Spectre do
+  @moduledoc """
+  Main entry point to the Spectre API. The Spectre API is versioned with a
+  top-level resource of the form /v{int}/ and this module forwards requests
+  to the correct version of the API.
+  """
   use Plug.Router
 
   plug Plug.Logger
