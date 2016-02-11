@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<subsonic-response xmlns="http://subsonic.org/restapi" status="ok"
+		   version="1.15.0">
+  <license valid="true" email="demo@subsonic.org"
+	   trialExpires="2013-12-19T21:13:01.344Z"/>
+</subsonic-response>
+

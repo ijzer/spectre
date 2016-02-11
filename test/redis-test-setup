@@ -1,0 +1,248 @@
+SET test:artists:nextid 0
+SET test:albums:nextid 0
+SET test:songs:nextid 0
+
+SCRIPT LOAD "local sub = ARGV[1] local pred = ARGV[2] local query = '[' .. sub .. '|' .. pred local results = redis.call('zrangebylex', 'test:relationships', query, query .. '\xff') local lookups = {} for k,v in pairs(results) do local key = string.gsub(v, '(.+|)', '') local lookup = redis.call('hget', key, 'name') table.insert(lookups, lookup) end return lookups"
+
+SCRIPT LOAD "local name = ARGV[1] local id = redis.call('incr', 'test:artists:nextid') local key = 'test:artists:' .. id redis.call('sadd', 'test:artists', id) redis.call('hmset', key, 'name', name)"
+SCRIPT LOAD "local name = ARGV[1] local tracks = ARGV[2] local id = redis.call('incr', 'test:albums:nextid') local key = 'test:albums:' .. id redis.call('sadd', 'test:albums', id) redis.call('hmset', key, 'name', name, 'tracks', tracks)"
+SCRIPT LOAD "local name = ARGV[1] local track = ARGV[2] local id = redis.call('incr', 'test:songs:nextid') local key = 'test:songs:' .. id redis.call('sadd', 'test:songs', id) redis.call('hmset', key, 'name', name, 'track', track)"
+SCRIPT LOAD "local sub_pred = ARGV[1] local sub = ARGV[2] local max = table.maxn(ARGV) for i=3,max,2 do local obj_pred = ARGV[i] local obj = ARGV[i+1] local sub_obj = sub .. '|' .. obj_pred .. '|' .. obj local obj_sub = obj .. '|' .. sub_pred .. '|' .. sub redis.call('zadd', 'test:relationships', 0, sub_obj, 0, obj_sub) end"
+
+EVALSHA "ac52d34441167fee6b5fe46070724a6ad5694fae" 0 "Ezra Furman"
+EVALSHA "ac52d34441167fee6b5fe46070724a6ad5694fae" 0 "Indie/Rock Playlist"
+EVALSHA "ac52d34441167fee6b5fe46070724a6ad5694fae" 0 "Don Caballero"
+EVALSHA "ac52d34441167fee6b5fe46070724a6ad5694fae" 0 "2 Bad Mice"
+EVALSHA "ac52d34441167fee6b5fe46070724a6ad5694fae" 0 "Blame"
+EVALSHA "ac52d34441167fee6b5fe46070724a6ad5694fae" 0 "Kaotic Chemistry"
+
+EVALSHA "500465d2959deb2b2189755a6802feb2f0a7ea78" 0 "Day of the Dog" 13
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 album test:albums:1 artist test:artists:1 year 2013 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "I Wanna Destroy Myself" 1
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:1 album test:albums:1 artist test:artists:1 year 2013 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Tell Em All to Go to Hell" 2
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:2 album test:albums:1 artist test:artists:1 year 2013 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "My Zero" 3
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:3 album test:albums:1 artist test:artists:1 year 2013 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Day of the Dog" 4
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:4 album test:albums:1 artist test:artists:1 year 2013 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Walk on in Darkness" 5
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:5 album test:albums:1 artist test:artists:1 year 2013 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Cold Hands" 6
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:6 album test:albums:1 artist test:artists:1 year 2013 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Anything Can Happen" 7
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:7 album test:albums:1 artist test:artists:1 year 2013 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "And Maybe God Is a Train" 8
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:8 album test:albums:1 artist test:artists:1 year 2013 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Been So Strange" 9
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:9 album test:albums:1 artist test:artists:1 year 2013 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "The Mall" 10
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:10 album test:albums:1 artist test:artists:1 year 2013 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "At the Bottom of the Ocean" 11
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:11 album test:albums:1 artist test:artists:1 year 2013 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Slacker Adria" 12
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:12 album test:albums:1 artist test:artists:1 year 2013 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Cherry Lane" 13
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:13 album test:albums:1 artist test:artists:1 year 2013 genre "Indie Rock" genre "Rock" genre "Americana"
+
+
+EVALSHA "500465d2959deb2b2189755a6802feb2f0a7ea78" 0 "Mysterious Power" 12
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 album test:albums:2 artist test:artists:1 year 2011 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Wild Rosemarie" 1
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:14 album test:albums:2 artist test:artists:1 year 2011 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "I Killed Myself but I Didn't Die" 2
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:15 album test:albums:2 artist test:artists:1 year 2011 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Hard Time in a Terrible Land" 3
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:16 album test:albums:2 artist test:artists:1 year 2011 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Mysterious Power" 4
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:17 album test:albums:2 artist test:artists:1 year 2011 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Teenage Wasteland" 5
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:18 album test:albums:2 artist test:artists:1 year 2011 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Bloodsucking Whore" 6
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:19 album test:albums:2 artist test:artists:1 year 2011 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Don't Turn Your Back on Love" 7
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:20 album test:albums:2 artist test:artists:1 year 2011 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Portrait of Maude" 8
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:21 album test:albums:2 artist test:artists:1 year 2011 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Fall in Love With My World" 9
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:22 album test:albums:2 artist test:artists:1 year 2011 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Too Strung Out" 10
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:23 album test:albums:2 artist test:artists:1 year 2011 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Heaven at the Drive-In" 11
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:24 album test:albums:2 artist test:artists:1 year 2011 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Wild Feeling" 12
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:25 album test:albums:2 artist test:artists:1 year 2011 genre "Indie Rock" genre "Rock" genre "Americana"
+
+
+EVALSHA "500465d2959deb2b2189755a6802feb2f0a7ea78" 0 "Perpetual Motion People" 13
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 album test:albums:3 artist test:artists:1 year 2015 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Restless Year" 1
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:26 album test:albums:3 artist test:artists:1 year 2015 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Lousy Connection" 2
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:27 album test:albums:3 artist test:artists:1 year 2015 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Hark! To the Music" 3
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:28 album test:albums:3 artist test:artists:1 year 2015 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Haunted Head" 4
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:29 album test:albums:3 artist test:artists:1 year 2015 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Hour of Deepest Need" 5
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:30 album test:albums:3 artist test:artists:1 year 2015 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Wobbly" 6
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:31 album test:albums:3 artist test:artists:1 year 2015 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Ordinary Life" 7
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:32 album test:albums:3 artist test:artists:1 year 2015 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Tip of a Match" 8
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:33 album test:albums:3 artist test:artists:1 year 2015 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Body Was Made" 9
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:34 album test:albums:3 artist test:artists:1 year 2015 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Watch You Go By" 10
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:35 album test:albums:3 artist test:artists:1 year 2015 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Pot Holes" 11
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:36 album test:albums:3 artist test:artists:1 year 2015 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Can I Sleep in Your Brain" 12
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:37 album test:albums:3 artist test:artists:1 year 2015 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "One Day I Will Sin No More" 13
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:38 album test:albums:3 artist test:artists:1 year 2015 genre "Indie Rock" genre "Rock" genre "Americana"
+
+
+EVALSHA "500465d2959deb2b2189755a6802feb2f0a7ea78" 0 "The Year of No Returning" 12
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 album test:albums:4 artist test:artists:1 year 2013 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Dr. Jekyll & Mr. Hyde" 1
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:39 album test:albums:4 artist test:artists:1 year 2013 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "American Soil" 2
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:40 album test:albums:4 artist test:artists:1 year 2013 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Lay in the Sun" 3
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:41 album test:albums:4 artist test:artists:1 year 2013 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Sinking Slow" 4
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:42 album test:albums:4 artist test:artists:1 year 2013 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "That's When It Hit Me" 5
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:43 album test:albums:4 artist test:artists:1 year 2013 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Down" 6
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:44 album test:albums:4 artist test:artists:1 year 2013 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Cruel, Cruel World" 7
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:45 album test:albums:4 artist test:artists:1 year 2013 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Are You Gonna Break My Heart?" 8
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:46 album test:albums:4 artist test:artists:1 year 2013 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Bad Man" 9
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:47 album test:albums:4 artist test:artists:1 year 2013 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "The Queen of Hearts" 10
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:48 album test:albums:4 artist test:artists:1 year 2013 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Doomed Love Affair" 11
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:49 album test:albums:4 artist test:artists:1 year 2013 genre "Indie Rock" genre "Rock" genre "Americana"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "40 Days in Kansas" 12
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:50 album test:albums:4 artist test:artists:1 year 2013 genre "Indie Rock" genre "Rock" genre "Americana"
+
+
+EVALSHA "500465d2959deb2b2189755a6802feb2f0a7ea78" 0 "Indie/Rock Playlist July 2015" 200
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 album test:albums:5 artist test:artists:2 year 2015 genre "Indie Rock"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Hark! to the Music" 56
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:51 album test:albums:5 artist test:artists:1 year 2015 genre "Indie Rock"
+
+
+EVALSHA "500465d2959deb2b2189755a6802feb2f0a7ea78" 0 "Indie/Rock Playlist May 2015" 160
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 album test:albums:6 artist test:artists:2 year 2015 genre "Indie Rock"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Restless Year" 78
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:52 album test:albums:6 artist test:artists:1 year 2015 genre "Indie Rock"
+
+
+EVALSHA "500465d2959deb2b2189755a6802feb2f0a7ea78" 0 "American Don" 9
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 album test:albums:7 artist test:artists:3 year 2000 genre "Math Rock" genre "Post-Rock" genre "Indie Rock"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Fire Back About Your New Baby's Sex" 1
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:53 album test:albums:7 artist test:artists:3 year 2000 genre "Math Rock" genre "Post-Rock" genre "Indie Rock"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "The Peter Criss Jazz" 2
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:54 album test:albums:7 artist test:artists:3 year 2000 genre "Math Rock" genre "Post-Rock" genre "Indie Rock"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Haven't Lived Afro Pop" 3
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:55 album test:albums:7 artist test:artists:3 year 2000 genre "Math Rock" genre "Post-Rock" genre "Indie Rock"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "You Drink a Lot of Coffee for a Teenager" 4
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:56 album test:albums:7 artist test:artists:3 year 2000 genre "Math Rock" genre "Post-Rock" genre "Indie Rock"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Ones All Over the Place" 5
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:57 album test:albums:7 artist test:artists:3 year 2000 genre "Math Rock" genre "Post-Rock" genre "Indie Rock"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "I Never Liked You" 6
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:58 album test:albums:7 artist test:artists:3 year 2000 genre "Math Rock" genre "Post-Rock" genre "Indie Rock"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Details on How to Get ICEMAN on Your License Plate" 7
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:59 album test:albums:7 artist test:artists:3 year 2000 genre "Math Rock" genre "Post-Rock" genre "Indie Rock"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "A Lot of People Tell Me I Have a Fake British Accent" 8
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:60 album test:albums:7 artist test:artists:3 year 2000 genre "Math Rock" genre "Post-Rock" genre "Indie Rock"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Let's Face It Pal, You Didn't Need That Eye Surgery" 9
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:61 album test:albums:7 artist test:artists:3 year 2000 genre "Math Rock" genre "Post-Rock" genre "Indie Rock"
+
+
+EVALSHA "500465d2959deb2b2189755a6802feb2f0a7ea78" 0 "For Respect" 11
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 album test:albums:8 artist test:artists:3 year 1993 genre "Math Rock" genre "Indie Rock" genre "Post-Rock"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "For Respect" 1
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:62 album test:albums:8 artist test:artists:3 year 1993 genre "Math Rock" genre "Indie Rock" genre "Post-Rock"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Chief Sitting Duck" 2
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:63 album test:albums:8 artist test:artists:3 year 1993 genre "Math Rock" genre "Indie Rock" genre "Post-Rock"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "New Laws" 3
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:64 album test:albums:8 artist test:artists:3 year 1993 genre "Math Rock" genre "Indie Rock" genre "Post-Rock"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Nicked and Liqued" 4
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:65 album test:albums:8 artist test:artists:3 year 1993 genre "Math Rock" genre "Indie Rock" genre "Post-Rock"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Rocco" 5
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:66 album test:albums:8 artist test:artists:3 year 1993 genre "Math Rock" genre "Indie Rock" genre "Post-Rock"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Subdued Confections" 6
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:67 album test:albums:8 artist test:artists:3 year 1993 genre "Math Rock" genre "Indie Rock" genre "Post-Rock"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Got a Mile, Got a Mile, Got an Inch" 7
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:68 album test:albums:8 artist test:artists:3 year 1993 genre "Math Rock" genre "Indie Rock" genre "Post-Rock"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Our Caballero" 8
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:69 album test:albums:8 artist test:artists:3 year 1993 genre "Math Rock" genre "Indie Rock" genre "Post-Rock"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Bears See Things Pretty Much the Way They Are" 9
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:70 album test:albums:8 artist test:artists:3 year 1993 genre "Math Rock" genre "Indie Rock" genre "Post-Rock"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Well Built Road" 10
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:71 album test:albums:8 artist test:artists:3 year 1993 genre "Math Rock" genre "Indie Rock" genre "Post-Rock"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Belted Sweater" 11
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:72 album test:albums:8 artist test:artists:3 year 1993 genre "Math Rock" genre "Indie Rock" genre "Post-Rock"
+
+
+EVALSHA "500465d2959deb2b2189755a6802feb2f0a7ea78" 0 "What Burns Never Returns" 8
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 album test:albums:9 artist test:artists:3 year 1998 genre "Math Rock" genre "Rock" genre "Indie Rock"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Don Caballero 3" 1
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:73 album test:albums:9 artist test:artists:3 year 1998 genre "Math Rock" genre "Rock" genre "Indie Rock"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "In the Abscense of Strong Evidence to the Contrary, One May Step Out of the Way of the Charging Bull" 2
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:74 album test:albums:9 artist test:artists:3 year 1998 genre "Math Rock" genre "Rock" genre "Indie Rock"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Delivering the Groceries at 138 Beats Per Minute" 3
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:75 album test:albums:9 artist test:artists:3 year 1998 genre "Math Rock" genre "Rock" genre "Indie Rock"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Slice Where You Live Like Pie" 4
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:76 album test:albums:9 artist test:artists:3 year 1998 genre "Math Rock" genre "Rock" genre "Indie Rock"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Room Temperature Suite" 5
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:77 album test:albums:9 artist test:artists:3 year 1998 genre "Math Rock" genre "Rock" genre "Indie Rock"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "The World in Perforated Lines" 6
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:78 album test:albums:9 artist test:artists:3 year 1998 genre "Math Rock" genre "Rock" genre "Indie Rock"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "From the Desk of Elsewhere Go" 7
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:79 album test:albums:9 artist test:artists:3 year 1998 genre "Math Rock" genre "Rock" genre "Indie Rock"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "June Is Finally Here" 8
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:80 album test:albums:9 artist test:artists:3 year 1998 genre "Math Rock" genre "Rock" genre "Indie Rock"
+
+
+EVALSHA "500465d2959deb2b2189755a6802feb2f0a7ea78" 0 "Kaotic Chemistry" 15
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 album test:albums:10 artist test:artists:4 year 1995 genre "Breakbeat" genre "Jungle" genre "Rave"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "2 Bad Mice" 1
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:81 album test:albums:10 artist test:artists:4 year 1995 genre "Breakbeat" genre "Jungle" genre "Rave"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Hold It Down" 3
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:82 album test:albums:10 artist test:artists:4 year 1995 genre "Breakbeat" genre "Jungle" genre "Rave"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Bombscare (UXB Mix)" 4
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:83 album test:albums:10 artist test:artists:4 year 1995 genre "Breakbeat" genre "Jungle" genre "Rave"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Waremouse" 5
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:84 album test:albums:10 artist test:artists:4 year 1995 genre "Breakbeat" genre "Jungle" genre "Rave"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Bombscare (Original Version)" 9
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:85 album test:albums:10 artist test:artists:4 year 1995 genre "Breakbeat" genre "Jungle" genre "Rave"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Underworld" 10
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:86 album test:albums:10 artist test:artists:4 year 1995 genre "Breakbeat" genre "Jungle" genre "Rave"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Tribal Revival" 11
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:87 album test:albums:10 artist test:artists:4 year 1995 genre "Breakbeat" genre "Jungle" genre "Rave"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Mass Confusion" 12
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:88 album test:albums:10 artist test:artists:4 year 1995 genre "Breakbeat" genre "Jungle" genre "Rave"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Bombscare ('94 US Mix)" 15
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:89 album test:albums:10 artist test:artists:4 year 1995 genre "Breakbeat" genre "Jungle" genre "Rave"
+
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Music Takes You (2 Bad Mice Take You)" 13
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:90 album test:albums:10 artist test:artists:5 year 1995 genre "Breakbeat" genre "Jungle" genre "Rave"
+
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Drum Trip" 2
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:91 album test:albums:10 artist test:artists:6 year 1995 genre "Breakbeat" genre "Jungle" genre "Rave"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Space Cakes" 6
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:92 album test:albums:10 artist test:artists:6 year 1995 genre "Breakbeat" genre "Jungle" genre "Rave"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Illegal Subs" 7
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:93 album test:albums:10 artist test:artists:6 year 1995 genre "Breakbeat" genre "Jungle" genre "Rave"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Drum Trip II" 8
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:94 album test:albums:10 artist test:artists:6 year 1995 genre "Breakbeat" genre "Jungle" genre "Rave"
+EVALSHA "242af1b248c0aafa7878f316ba8e738f5e5be4dd" 0 "Strip Search" 14
+EVALSHA "7c55d4c12784dbb16ebbcfe4557fbec21de0121f" 0 song test:songs:95 album test:albums:10 artist test:artists:6 year 1995 genre "Breakbeat" genre "Jungle" genre "Rave"

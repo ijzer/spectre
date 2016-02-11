@@ -1,0 +1,36 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:sub="http://subsonic.org/restapi"
+           targetNamespace="http://subsonic.org/restapi"
+           attributeFormDefault="unqualified"
+           elementFormDefault="qualified"
+           version="1.15.0">
+
+  <xs:element name="subsonic-response" type="sub:Response"/>
+
+  <xs:complexType name="Response">
+    <xs:choice minOccurs="0" maxOccurs="1">
+      <xs:element name="error" type="sub:Error" minOccurs="1" maxOccurs="1"/>
+    </xs:choice>
+    <xs:attribute name="status" type="sub:ResponseStatus" use="required"/>
+    <xs:attribute name="version" type="sub:Version" use="required"/>
+  </xs:complexType>
+
+  <xs:simpleType name="ResponseStatus">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="ok"/>
+      <xs:enumeration value="failed"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="Version">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="\d+\.\d+\.\d+"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="Error">
+    <xs:attribute name="code" type="xs:int" use="required"/>
+    <xs:attribute name="message" type="xs:string" use="optional"/>
+  </xs:complexType>
+
+</xs:schema>
